@@ -42,7 +42,7 @@ int main(int argc, const char * argv[])
 
 	cl::Program program(context, sources);
 
-	auto err = program.build("-cl-std=CL2.0");
+	auto err = program.build("-cl-std=CL1.2");
 
 	std::cout << "err " << err << "\n";
 

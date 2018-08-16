@@ -13,10 +13,11 @@ cl::Program CreateProgram(const std::string &file) {
     std::vector<cl::Platform> platforms;
     cl::Platform::get(&platforms);
 
-    auto platform = platforms.at(2);
+    auto platform = platforms.at(1);
     std::vector<cl::Device> devices;
-    platform.getDevices(CL_DEVICE_TYPE_GPU, &devices);
+    platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
 
+	std::cout << "ocl devices: " << devices.size() << "\n";
     assert(devices.size() > 0);
 
     auto device = devices.at(0);
@@ -31,9 +32,23 @@ cl::Program CreateProgram(const std::string &file) {
 
     auto err = program.build("-cl-std=CL1.2");
 
+    cl_build_status status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(device);
+    if (status == CL_BUILD_ERROR) {
+        // Get the build log
+        std::string name = device.getInfo<CL_DEVICE_NAME>();
+        std::string buildlog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+        std::cerr << "Build log for " << name << ":" << std::endl
+                  << buildlog << std::endl;
+    }
+std::string name = device.getInfo<CL_DEVICE_NAME>();
+        std::string buildlog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+        std::cerr << "Build log for " << name << ":" << std::endl
+                  << buildlog << std::endl;
     std::cout << "platform: " << platform.getInfo<CL_PLATFORM_NAME>() << "\nvendor: " << device.getInfo<CL_DEVICE_VENDOR>() << "\ntype: " << device.getInfo<CL_DEVICE_TYPE>() << "\n\n";
 
-    assert(err == 0);
+	std::cout << "ocl context devices: " <<   program.getInfo<CL_PROGRAM_CONTEXT>().getInfo<CL_CONTEXT_DEVICES>().size() << "\n";
+
     std::cout << "err: " << err << "\n";
+    assert(err == 0);
     return program;
 }

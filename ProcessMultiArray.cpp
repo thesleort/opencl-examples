@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <array>
+#include <assert.h>
 
 #include "ocl_helper.hpp"
 
@@ -12,6 +13,8 @@ int main(int argc, const char *argv[]) {
     auto devices = context.getInfo<CL_CONTEXT_DEVICES>();
     auto &device = devices.front();
 
+	assert(devices.size() > 0);
+
     const int rows = 3;
     const int cols = 2;
     const int count = rows * cols;
@@ -19,6 +22,9 @@ int main(int argc, const char *argv[]) {
 
     cl::Buffer buf(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(int) * count, arr.data());
     cl::Kernel kernel(program, "ProcessMultiArray");
+
+	cl_int err = 0;
+	auto workgroupsize = kernel.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(device, &err);
 
     kernel.setArg(0, buf);
 

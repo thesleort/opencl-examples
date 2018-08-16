@@ -7,7 +7,9 @@ int main(int argc, const char *argv[]) {
     cl::Program program = CreateProgram(argv[1]);
 
     auto context = program.getInfo<CL_PROGRAM_CONTEXT>();
-    auto devices = context.getInfo<CL_CONTEXT_DEVICES>();
+    // auto devices = context.getInfo<CL_CONTEXT_DEVICES>();
+	auto devices = program.getInfo<CL_PROGRAM_DEVICES>();
+	std::cout << "ocl context devices: " <<   program.getInfo<CL_PROGRAM_CONTEXT>().getInfo<CL_CONTEXT_DEVICES>().size() << "\n";
     auto &device = devices.front();
 
     std::vector<int> vec(1024);
@@ -32,4 +34,5 @@ int main(int argc, const char *argv[]) {
     for (int i = 0; i < vec.size(); ++i) {
         std::cout << vec.at(i);
     }
+	std::cout << "\n";
 }
